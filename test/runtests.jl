@@ -22,4 +22,6 @@ using Base.Test
     @test length(rs) == 5
     @test isa(rs, Vector)
     @test isa(rs[1], NamedTuple)
+
+    df_str = sprint(show, df)
 end

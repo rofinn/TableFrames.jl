@@ -96,46 +96,6 @@ Base.next(itr::RowIterator, i::Int) = (itr.df[i], i + 1)
 Base.length(itr::RowIterator) = size(itr.df, 2)
 Base.eltype(itr::RowIterator) = NamedTuple
 
-########################################
-# Displaying
-########################################
-function fmt_elstr(s::String, w::Int)
-    n = length(s)
-    if n > w && w > 3
-        return s[1:w]
-    elseif n < w
-        return string(s, repeat(" ", w - n))
-    else
-        return s
-    end
-end
-
-function Base.show(io::IO, df::DataFrame, nrows::Int=5, threshold::Int=20)
-    @assert nrows <= threshold
-    nrows = size(df, 2) <= threshold ? size(df, 2) : nrows
-    row_col_width = Int(floor(log10(nrows))) + 1
-    row_header = fmt_elstr("Row", row_col_width)
-    headers = [string(c) for c in names(df)]
-    unshift!(headers, row_header)
-    widths = [length(h) for h in headers]
-
-    rstrings = map(1:nrows) do i
-        r = df[i]
-        elstrings = map(2:length(widths)) do j
-            fmt_elstr(sprint(show, r[Symbol(headers[j])]), widths[j])
-        end
-
-        unshift!(elstrings, fmt_elstr(string(i), widths[1]))
-        return join(elstrings, " | ")
-    end
-
-    unshift!(rstrings, join([repeat("-", w) for w in widths], "-|-"))
-    unshift!(rstrings, join(headers, " | "))
-    size(df, 2) > threshold ? push!(rstrings, "...") : nothing
-
-    print(io, join(rstrings, "\n"))
-end
-
 ################################################
 # Methods for creating NamedTuple row records.
 ###############################################
@@ -170,5 +130,7 @@ function samelen(cols, default=-1)
 
     return result
 end
+
+include("show.jl")
 
 end  # module
