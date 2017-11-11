@@ -4,6 +4,7 @@ export DataFrame, record, columns, rows
 
 using NamedTuples
 using DataStructures
+using DataStreams
 
 const Store{T<:AbstractVector} = Associative{Symbol, T}
 
@@ -132,5 +133,6 @@ function samelen(cols, default=-1)
 end
 
 include("show.jl")
+include("io.jl")
 
 end  # module
